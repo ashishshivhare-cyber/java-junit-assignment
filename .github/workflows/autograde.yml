@@ -1,0 +1,31 @@
+name: Java JUnit Autograde
+
+on: [push]
+
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Download JUnit
+      run: |
+        mkdir -p lib
+        curl -L -o lib/junit.jar \
+        https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.10.0/junit-platform-console-standalone-1.10.0.jar
+
+    - name: Compile Java
+      run: |
+        javac -cp lib/junit.jar src/Main.java tests/MainTest.java
+
+    - name: Run JUnit Tests
+      run: |
+        java -jar lib/junit.jar --class-path . --scan-class-path
